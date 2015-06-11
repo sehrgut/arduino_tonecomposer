@@ -8,6 +8,8 @@ struct Note {
   int duration;
 };
 
+// todo: make abstract, and derive pentatonic-composer and twelvetone-composer
+
 class Composer {
   private:
     const byte* _scale;
