@@ -1,5 +1,6 @@
 #include "tlrand.h"
 
+// TwoLeastSign algorithm taken from http://arxiv.org/pdf/1212.3777v1.pdf
 uint32_t tlrand(int pin) {
   uint32_t out = 0;
   byte bits = 32;

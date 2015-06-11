@@ -12,13 +12,20 @@ struct Note {
 
 class Composer {
   private:
-    const byte* _scale;
-    const byte _scaleLen;
-    const int _tonic;
+    byte _scale[6] = {30, 36, 40, 45, 54, 60};
+    byte _scaleLen = 6;
+    int _tonic;
+    unsigned long _rand_ctx;
+
+    static byte _rngPin;
     
   public:
-    Composer(const byte* scale, const byte scaleLen, const int tonic);
+    
+    Composer(const int tonic);
     struct Note next();
+
+    static byte getRngPin();
+    static void setRngPin(byte pin);
 };
 
 #endif COMPOSER_H

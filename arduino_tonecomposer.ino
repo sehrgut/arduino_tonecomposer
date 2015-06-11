@@ -1,14 +1,16 @@
 #include "blink.h"
-#include "tlrand.h"
 #include "composer.h"
+
+#define BUFLEN 255
+char buf[BUFLEN + 1];
+boolean haveCmd = false;
+int bufpos = 0;
 
 #define MOTD "Welcome to ToneComposer"
 
 #define PWM_PIN 8
-#define RAND_PIN 0
+#define RAND_PIN 1
 
-byte scale[] = {30, 36, 40, 45, 54, 60};
-byte scaleLen = 6;
 int tonic = 440;
 Composer* cp;
 
@@ -25,6 +27,30 @@ void play(struct Note n) {
   delay(n.duration*1.01);
 }
 
+// doesn't work on pwm_pin
+void tone_pwm(byte pin, int freq, int duration) {
+  int endTime = millis() + duration;
+  int mcs = 1000000 / freq / 2;
+  
+  while (millis() <= endTime) {
+    digitalWrite(pin, HIGH);
+    delayMicroseconds(mcs);
+    digitalWrite(pin, LOW);
+    delayMicroseconds(mcs);
+  }
+}
+
+void playTest() {
+  static byte i = 1;
+  static boolean up = true;
+  
+  if (i == 0xFF) up = false;
+  else if (i == 0x01) up = true;
+  
+  analogWrite(PWM_PIN, (up ? i++ : i--));
+  delay(i%10);
+}
+
 void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
@@ -34,11 +60,45 @@ void setup() {
 
   Serial.println(MOTD);
 
-  randomSeed(tlrand(RAND_PIN));
-  cp = new  Composer(scale, scaleLen, tonic);
+  pinMode(PWM_PIN, OUTPUT);
+  Composer::setRngPin(RAND_PIN);
+  cp = new  Composer(tonic);
   Serial.println("The maestro is ready.");
 }
 
 void loop() {
-  play(cp->next());
+  static boolean playing = true;
+  
+  if (haveCmd) {
+    haveCmd = false;
+    if (!strcmp("pause", buf)) {
+      playing = false;
+    } else if(!strcmp("help", buf)) {
+      Serial.println("Type play, pause, or help");
+    } else if(!strcmp("play", buf)) {
+      playing = true;
+    }
+  }
+ 
+  if (playing) {
+    play(cp->next());
+  }
 }
+
+// todo: differentiate b/w "buffer full" and "line complete"
+void serialEvent() {
+  while (Serial.available() && bufpos < BUFLEN) {
+    char in = (char)Serial.read();
+    
+    if (in == '\n') {
+      buf[bufpos] = '\0';
+      haveCmd = true;
+      bufpos = 0;
+      break;
+    } else {
+      buf[bufpos++] = in;
+    }
+    
+  }
+}
+
