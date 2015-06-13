@@ -8,21 +8,17 @@ struct Note {
   int duration;
 };
 
-// todo: make abstract, and derive pentatonic-composer and twelvetone-composer
+// todo: namespace
+// todo: 12-bar and twelvetone-composers
 
 class Composer {
-  private:
-    byte _scale[6] = {30, 36, 40, 45, 54, 60};
-    byte _scaleLen = 6;
-    int _tonic;
+  protected:
     unsigned long _rand_ctx;
-
     static byte _rngPin;
     
   public:
-    
-    Composer(const int tonic);
-    struct Note next();
+    Composer();
+    virtual struct Note next() = 0;
 
     static byte getRngPin();
     static void setRngPin(byte pin);

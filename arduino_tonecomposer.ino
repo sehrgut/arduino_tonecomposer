@@ -1,5 +1,5 @@
 #include "blink.h"
-#include "composer.h"
+#include "pentatoniccomposer.h"
 
 #define BUFLEN 255
 char buf[BUFLEN + 1];
@@ -62,7 +62,7 @@ void setup() {
 
   pinMode(PWM_PIN, OUTPUT);
   Composer::setRngPin(RAND_PIN);
-  cp = new  Composer(tonic);
+  cp = new  PentatonicComposer(tonic, BLUES_MINOR);
   Serial.println("The maestro is ready.");
 }
 
