@@ -62,7 +62,7 @@ void setup() {
 
   pinMode(PWM_PIN, OUTPUT);
   Composer::setRngPin(RAND_PIN);
-  cp = new  PentatonicComposer(tonic, BLUES_MINOR);
+  cp = new  PentatonicComposer(tonic, BLUES_MINOR, PINKNOISE);
   Serial.println("The maestro is ready.");
 }
 

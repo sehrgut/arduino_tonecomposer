@@ -2,6 +2,7 @@
 #define COMPOSER_H
 
 #include <Arduino.h>
+#include "pinkrand.h"
 
 struct Note {
   int freq;
@@ -14,7 +15,10 @@ struct Note {
 class Composer {
   protected:
     unsigned long _rand_ctx;
+    
     static byte _rngPin;
+    long unirand(long boundA, long boundB);
+    static long pinkint(long boundA, long boundB, struct pinkrand_state* ctx);
     
   public:
     Composer();
@@ -22,6 +26,7 @@ class Composer {
 
     static byte getRngPin();
     static void setRngPin(byte pin);
+    
 };
 
 #endif COMPOSER_H

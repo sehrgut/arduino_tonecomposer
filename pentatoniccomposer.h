@@ -13,6 +13,11 @@ enum PentatonicScales {
   PYTHAGOREAN_MINOR
 };
 
+enum PentatonicNoises {
+  WHITENOISE,
+  PINKNOISE
+};
+
 class PentatonicComposer: public Composer {
   private:
     byte _scale[6][6] = {
@@ -26,9 +31,16 @@ class PentatonicComposer: public Composer {
     byte _scaleLen = 6;
     int _tonic;
     enum PentatonicScales _whichScale;
+    enum PentatonicNoises _whichNoise;
+
+    struct pinkrand_state _pitch_pink;
+    struct pinkrand_state _duration_pink;
+
+    byte nextPitch();
+    int nextDuration();
 
   public:
-    PentatonicComposer(const int tonic, const enum PentatonicScales whichScale);
+    PentatonicComposer(const int tonic, const enum PentatonicScales whichScale, const enum PentatonicNoises whichNoise);
     struct Note next();
 };
 
