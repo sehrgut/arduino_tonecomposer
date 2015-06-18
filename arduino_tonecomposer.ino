@@ -1,7 +1,7 @@
 #include "blink.h"
 #include "pentatoniccomposer.h"
 
-#define BUFLEN 255
+#define BUFLEN 16
 char buf[BUFLEN + 1];
 boolean haveCmd = false;
 int bufpos = 0;
@@ -22,33 +22,19 @@ void logNote(struct Note n) {
 }
 
 void play(struct Note n) {
-  logNote(n);
   tone(PWM_PIN, n.freq, n.duration);
-  delay(n.duration*1.01);
+  logNote(n);
 }
 
-// doesn't work on pwm_pin
-void tone_pwm(byte pin, int freq, int duration) {
-  int endTime = millis() + duration;
-  int mcs = 1000000 / freq / 2;
+void do_sequencer() {
+  static struct Note next_note = cp->next();
+  static unsigned long next_time;
   
-  while (millis() <= endTime) {
-    digitalWrite(pin, HIGH);
-    delayMicroseconds(mcs);
-    digitalWrite(pin, LOW);
-    delayMicroseconds(mcs);
+  if (millis() >= next_time) {
+    play(next_note);
+    next_time = millis() + (next_note.duration);
+    next_note = cp->next();
   }
-}
-
-void playTest() {
-  static byte i = 1;
-  static boolean up = true;
-  
-  if (i == 0xFF) up = false;
-  else if (i == 0x01) up = true;
-  
-  analogWrite(PWM_PIN, (up ? i++ : i--));
-  delay(i%10);
 }
 
 void setup() {
@@ -62,13 +48,17 @@ void setup() {
 
   pinMode(PWM_PIN, OUTPUT);
   Composer::setRngPin(RAND_PIN);
-  cp = new  PentatonicComposer(tonic, BLUES_MINOR, PINKNOISE);
+  cp = new  PentatonicComposer(tonic, BLUES_MINOR, PINKNOISE_2);
   Serial.println("The maestro is ready.");
 }
 
 void loop() {
   static boolean playing = true;
   
+  if (playing) {
+    do_sequencer();
+  }
+
   if (haveCmd) {
     haveCmd = false;
     if (!strcmp("pause", buf)) {
@@ -80,9 +70,6 @@ void loop() {
     }
   }
  
-  if (playing) {
-    play(cp->next());
-  }
 }
 
 // todo: differentiate b/w "buffer full" and "line complete"

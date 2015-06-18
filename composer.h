@@ -17,8 +17,8 @@ class Composer {
     unsigned long _rand_ctx;
     
     static byte _rngPin;
-    long unirand(long boundA, long boundB);
     static long pinkint(long boundA, long boundB, struct pinkrand_state* ctx);
+    static long pinkint2(long boundA, long boundB, struct pinkrand_state* ctx);
     
   public:
     Composer();

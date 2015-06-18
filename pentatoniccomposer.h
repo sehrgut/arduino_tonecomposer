@@ -15,7 +15,8 @@ enum PentatonicScales {
 
 enum PentatonicNoises {
   WHITENOISE,
-  PINKNOISE
+  PINKNOISE,
+  PINKNOISE_2
 };
 
 class PentatonicComposer: public Composer {

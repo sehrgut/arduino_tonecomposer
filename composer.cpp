@@ -19,23 +19,6 @@ void Composer::setRngPin(byte pin) {
   _rngPin = pin;
 }
 
-long Composer::unirand(long boundA, long boundB) {
-  long minval = min(boundA, boundB);
-  long maxval = max(boundA, boundB);
-  
-  unsigned long delta = maxval - minval + 1;
-  unsigned long rand_ceil = RANDOM_MAX - (RANDOM_MAX % delta);
-  
-  int i = 0;
-  unsigned long r;
-  do {
-    r = random_r(&_rand_ctx);
-    i++;
-  } while (r >= rand_ceil);
-  
-  return (r % delta) + minval;
-}
-
 // todo: this is a terrible way to get a pink in a range, but need to get out of float pink generation first
 long Composer::pinkint(long boundA, long boundB, struct pinkrand_state* ctx) {
   long minval = min(boundA, boundB);
@@ -44,4 +27,13 @@ long Composer::pinkint(long boundA, long boundB, struct pinkrand_state* ctx) {
   unsigned long delta = maxval - minval + 1;
   double r = pinkrand(ctx);
   return (unsigned long)(r * delta) + minval;
+}
+
+long Composer::pinkint2(long boundA, long boundB, struct pinkrand_state* ctx) {
+  long minval = min(boundA, boundB);
+  long maxval = max(boundA, boundB);
+  
+  unsigned long delta = maxval - minval + 1;
+  double r = pinkrand_2(ctx);
+  return lround((r * delta)) + minval;
 }

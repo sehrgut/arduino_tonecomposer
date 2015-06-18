@@ -1,6 +1,7 @@
 #include <math.h>
 #include "pentatoniccomposer.h"
 #include "tlrand.h"
+#include "unirand.h"
 
 PentatonicComposer::PentatonicComposer(int tonic, enum PentatonicScales whichScale, enum PentatonicNoises whichNoise) :
   _tonic(tonic),
@@ -16,10 +17,13 @@ byte PentatonicComposer::nextPitch() {
   
   switch(_whichNoise) {
     case WHITENOISE:
-      pos = unirand(0, _scaleLen - 1);
+      pos = unirand(0, _scaleLen - 1, &_rand_ctx);
       break;
     case PINKNOISE:
       pos = pinkint(0, _scaleLen - 1, &_pitch_pink);
+      break;
+    case PINKNOISE_2:
+      pos = pinkint2(0, _scaleLen - 1, &_pitch_pink);
       break;
   }
   
@@ -31,10 +35,13 @@ int PentatonicComposer::nextDuration() {
   
   switch(_whichNoise) {
     case WHITENOISE:
-      duration *= unirand(1, 4);
+      duration *= unirand(1, 4, &_rand_ctx);
       break;
     case PINKNOISE:
       duration *= pinkint(1, 4, &_duration_pink);
+      break;
+    case PINKNOISE_2:
+      duration *= pinkint2(1, 4, &_duration_pink);
       break;
   }
   
